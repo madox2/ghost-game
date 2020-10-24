@@ -1,14 +1,62 @@
 import { useParams } from 'react-router-dom'
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import GhostGame from './game/GhostGame'
 import JoinGame from './game/JoinGame'
+import Loading from '../components/Loading'
 
 export default function Game() {
   const { gameId } = useParams()
   const [nickname, setNickname] = useState()
-  if (nickname) {
-    return <GhostGame gameId={gameId} nickname={nickname} />
+  const [gameState, setGameState] = useState()
+  const [isConnected, setIsConnected] = useState(false)
+  const [socket, setSocket] = useState()
+
+  useEffect(() => {
+    setSocket(global.io())
+  }, [])
+
+  useEffect(() => {
+    if (!socket) {
+      return
+    }
+    socket.on('connect', () => {
+      setIsConnected(socket.connected)
+    })
+    socket.on('gameState', (state) => {
+      setGameState(state)
+    })
+  }, [socket])
+
+  if (!isConnected) {
+    return <Loading />
   }
-  return <JoinGame onSubmit={(nickname) => setNickname(nickname)} />
+
+  if (!nickname) {
+    return (
+      <JoinGame
+        onSubmit={(nickname) => {
+          setNickname(nickname)
+          socket.emit('joinGame', {
+            gameId,
+            nickname,
+          })
+        }}
+      />
+    )
+  }
+
+  if (!gameState) {
+    return <Loading />
+  }
+
+  return (
+    <GhostGame
+      nickname={nickname}
+      state={gameState}
+      startGame={() => socket.emit('startGame')}
+      stopGame={() => socket.emit('stopGame')}
+      doAction={(action) => socket.emit('doAction', action)}
+    />
+  )
 }

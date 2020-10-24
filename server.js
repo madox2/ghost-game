@@ -18,32 +18,18 @@ function shuffleCards() {
   // TODO: shuffle cards
   return [
     [
-      ['bottle', 'green', 1],
-      ['ghost', 'blue', 2],
-      ['chair', 'white', 3],
-      ['book', 'grey', 4],
-      ['mouse', 'red', 5],
+      ['bottle', 'green', 1, [0, 0]],
+      ['ghost', 'blue', 2, [0, 2]],
+      ['chair', 'white', 3, [1, 1]],
+      ['book', 'grey', 2, [2, 1]],
+      ['mouse', 'red', 1, [2, 2]],
     ],
     [
-      ['bottle', 'white', 1],
-      ['ghost', 'blue', 2],
-      ['chair', 'red', 3],
-      ['book', 'grey', 4],
-      ['mouse', 'green', 5],
-    ],
-    [
-      ['bottle', 'green', 1],
-      ['ghost', 'blue', 2],
-      ['chair', 'white', 3],
-      ['book', 'grey', 4],
-      ['mouse', 'red', 5],
-    ],
-    [
-      ['bottle', 'white', 1],
-      ['ghost', 'blue', 2],
-      ['chair', 'red', 3],
-      ['book', 'grey', 4],
-      ['mouse', 'green', 5],
+      ['bottle', 'white', 3, [0, 1]],
+      ['ghost', 'blue', 3, [0, 2]],
+      ['chair', 'red', 1, [1, 2]],
+      ['book', 'grey', 2, [1, 1]],
+      ['mouse', 'green', 2, [3, 2]],
     ],
   ]
 }

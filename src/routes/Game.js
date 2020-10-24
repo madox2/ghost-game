@@ -59,7 +59,6 @@ export default function Game() {
       nickname={nickname}
       state={gameState}
       startGame={() => socket.emit('startGame')}
-      stopGame={() => socket.emit('stopGame')}
       doAction={(action) => socket.emit('doAction', action)}
       logs={logs}
     />

@@ -18,16 +18,32 @@ function shuffleCards() {
   // TODO: shuffle cards
   return [
     [
-      ['bottle', 'g', 1],
-      ['ghost', 'b', 2],
-      ['chair', 'w', 3],
-      ['book', 'r', 4],
+      ['bottle', 'green', 1],
+      ['ghost', 'blue', 2],
+      ['chair', 'white', 3],
+      ['book', 'grey', 4],
+      ['mouse', 'red', 5],
     ],
     [
-      ['bottle', 'w', 1],
-      ['ghost', 'b', 2],
-      ['chair', 'r', 3],
-      ['book', 'g', 4],
+      ['bottle', 'white', 1],
+      ['ghost', 'blue', 2],
+      ['chair', 'red', 3],
+      ['book', 'grey', 4],
+      ['mouse', 'green', 5],
+    ],
+    [
+      ['bottle', 'green', 1],
+      ['ghost', 'blue', 2],
+      ['chair', 'white', 3],
+      ['book', 'grey', 4],
+      ['mouse', 'red', 5],
+    ],
+    [
+      ['bottle', 'white', 1],
+      ['ghost', 'blue', 2],
+      ['chair', 'red', 3],
+      ['book', 'grey', 4],
+      ['mouse', 'green', 5],
     ],
   ]
 }
@@ -38,10 +54,22 @@ const gameStates = {}
 
 const logs = {}
 
+const START_COUNTDOWN = 0 // 3
+const ROUND_RESULTS_TIMEOUT = 2000
+
 io.on('connection', (socket) => {
   console.log('a user connected')
   let user
   let gameId
+
+  function newRound(number) {
+    return {
+      type: 'round',
+      round: number,
+      card: gameRounds[gameId][number - 1],
+      fails: [],
+    }
+  }
 
   function getState() {
     return gameStates[gameId]
@@ -49,9 +77,6 @@ io.on('connection', (socket) => {
 
   function setState(setState) {
     gameStates[gameId] = setState(gameStates[gameId])
-  }
-
-  function emit() {
     io.to(gameId).emit('gameState', getState())
   }
 
@@ -69,19 +94,19 @@ io.on('connection', (socket) => {
     user = {
       nickname: data.nickname,
       id: Date.now(),
+      cards: 0,
     }
     gameStates[gameId] = gameStates[gameId] || {
       id: gameId,
       users: [],
       isRunning: false,
     }
+    socket.join(gameId)
     setState((state) => ({
       ...state,
       users: state.users.concat(user),
     }))
-    socket.join(gameId)
     log('joined game')
-    emit()
   })
 
   socket.on('disconnect', () => {
@@ -91,12 +116,14 @@ io.on('connection', (socket) => {
         users: state.users.filter((u) => u.id !== user.id),
       }))
       log('left game')
-      emit()
     }
   })
 
   socket.on('startGame', () => {
-    let countdown = 3
+    if (getState().isRunning) {
+      return
+    }
+    let countdown = START_COUNTDOWN
     setState((state) => ({
       ...state,
       isRunning: true,
@@ -105,9 +132,12 @@ io.on('connection', (socket) => {
         type: 'countdown',
         value: countdown,
       },
+      users: state.users.map((u) => ({
+        ...u,
+        cards: 0,
+      })),
     }))
     log('started game')
-    emit()
 
     const interval = setInterval(() => {
       countdown--
@@ -124,31 +154,105 @@ io.on('connection', (socket) => {
           },
         }))
       } else {
+        gameRounds[gameId] = shuffleCards()
         setState((state) => ({
           ...state,
-          board: {
-            type: 'round',
-            value: 'TODO',
-          },
+          board: newRound(1),
         }))
         clearInterval(interval)
       }
-      emit()
     }, 1000)
   })
 
-  socket.on('stopGame', () => {
-    setState((state) => ({
-      ...state,
-      isRunning: false,
-      board: undefined,
-    }))
-    log('stopped game')
-    emit()
-  })
-
   socket.on('doAction', (type) => {
-    console.log(type)
+    const state = getState()
+    if (state?.board?.type !== 'round') {
+      return
+    }
+    if (state.board.fails.some((f) => f.user.id === user.id)) {
+      return
+    }
+    // eslint-disable-next-line
+    const [_, color] = state.board.card.find(([t]) => t === type)
+    if (
+      (type === 'bottle' && color === 'green') ||
+      (type === 'ghost' && color === 'white') ||
+      (type === 'book' && color === 'blue') ||
+      (type === 'mouse' && color === 'grey') ||
+      (type === 'chair' && color === 'red')
+    ) {
+      let gainedCards = 1
+      const newUsers = state.users
+        .map((u) => {
+          if (u.id === user.id) {
+            // winner
+            return u
+          }
+          const failedCount = state.board.fails.filter(
+            (f) => f.user.id === u.id
+          ).length
+          const minusCount = Math.min(failedCount, u.cards)
+          gainedCards += minusCount
+          return {
+            ...u,
+            cards: u.cards - minusCount,
+          }
+        })
+        .map((u) => {
+          if (u.id !== user.id) {
+            return u
+          }
+          return {
+            ...u,
+            cards: u.cards + gainedCards,
+          }
+        })
+
+      setState((state) => ({
+        ...state,
+        board: {
+          ...state.board,
+          type: 'roundResults',
+          winner: user,
+        },
+        users: newUsers,
+      }))
+
+      setTimeout(() => {
+        const nextRound = state.board.round + 1
+        console.log(nextRound, gameRounds[gameId])
+        if (nextRound > gameRounds[gameId].length) {
+          setState((state) => ({
+            ...state,
+            isRunning: false,
+            board: {
+              type: 'results',
+              results: state.users,
+            },
+          }))
+        } else {
+          setState((state) => ({
+            ...state,
+            board: newRound(state.board.round + 1),
+          }))
+        }
+      }, ROUND_RESULTS_TIMEOUT)
+    } else {
+      const newFails = state.board.fails.concat({
+        user,
+        type,
+      })
+      const allFailed = !state.users.some(
+        (u) => !newFails.some((f) => f.user.id === u.id)
+      )
+      setState((state) => ({
+        ...state,
+        board: {
+          ...state.board,
+          fails: allFailed ? [] : newFails,
+        },
+      }))
+    }
   })
 })
 

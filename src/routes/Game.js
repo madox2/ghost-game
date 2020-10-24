@@ -9,6 +9,7 @@ export default function Game() {
   const { gameId } = useParams()
   const [nickname, setNickname] = useState()
   const [gameState, setGameState] = useState()
+  const [logs, setLogs] = useState()
   const [isConnected, setIsConnected] = useState(false)
   const [socket, setSocket] = useState()
 
@@ -25,6 +26,9 @@ export default function Game() {
     })
     socket.on('gameState', (state) => {
       setGameState(state)
+    })
+    socket.on('logs', (gameLogs) => {
+      setLogs(gameLogs)
     })
   }, [socket])
 
@@ -57,6 +61,7 @@ export default function Game() {
       startGame={() => socket.emit('startGame')}
       stopGame={() => socket.emit('stopGame')}
       doAction={(action) => socket.emit('doAction', action)}
+      logs={logs}
     />
   )
 }

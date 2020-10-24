@@ -7,7 +7,7 @@ export default function JoinGame({ onSubmit }) {
     inputRef.current.focus()
   })
   return (
-    <>
+    <form onSubmit={() => onSubmit(name)}>
       <input
         type="text"
         placeholder="Nickname"
@@ -15,9 +15,7 @@ export default function JoinGame({ onSubmit }) {
         onChange={(e) => setName(e.target.value)}
         ref={inputRef}
       />
-      <button type="button" onClick={() => onSubmit(name)}>
-        Join game
-      </button>
-    </>
+      <button type="submit">Join game</button>
+    </form>
   )
 }

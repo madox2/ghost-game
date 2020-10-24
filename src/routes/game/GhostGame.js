@@ -1,3 +1,7 @@
+import React from 'react'
+
+import GameBoard from './GameBoard'
+
 function Controls({ nickname, state, stopGame, startGame }) {
   return (
     <div>
@@ -26,14 +30,10 @@ function Users({ state }) {
   )
 }
 
-function Board() {
-  return <div style={{ flex: 1 }}>Board</div>
-}
-
-function History({ state }) {
+function Logs({ logs }) {
   return (
     <div style={{ width: 200, background: 'red' }}>
-      {state.history.map((h) => (
+      {logs.map((h) => (
         <div key={h.timestamp}>{h.message}</div>
       ))}
     </div>
@@ -46,6 +46,7 @@ export default function GhostGame({
   state,
   stopGame,
   startGame,
+  logs,
 }) {
   return (
     <div>
@@ -59,8 +60,8 @@ export default function GhostGame({
       </div>
       <div style={{ display: 'flex', height: '95vh' }}>
         <Users state={state} />
-        <Board state={state} />
-        <History state={state} />
+        <GameBoard state={state} doAction={doAction} />
+        <Logs logs={logs} />
       </div>
     </div>
   )

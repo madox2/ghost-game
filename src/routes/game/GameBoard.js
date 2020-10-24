@@ -30,7 +30,7 @@ function BoardIndex({ startGame, state }) {
   )
 }
 
-function Controls({ state, doAction }) {
+function Controls({ state, doAction, user }) {
   const items = [
     ['bottle', 'green'],
     ['ghost', 'white'],
@@ -48,6 +48,11 @@ function Controls({ state, doAction }) {
     >
       {items.map(([type, color]) => (
         <ControlCard
+          disabled={
+            !state.isRunning ||
+            state.board?.fails?.some((f) => f.user.id === user.id) ||
+            state.board?.type !== 'round'
+          }
           key={type}
           type={type}
           color={color}
@@ -58,7 +63,7 @@ function Controls({ state, doAction }) {
   )
 }
 
-function GameContainer({ children, state, doAction }) {
+function GameContainer({ children, state, doAction, user }) {
   return (
     <div
       style={{
@@ -79,7 +84,7 @@ function GameContainer({ children, state, doAction }) {
         {children}
       </div>
       <div style={{ background: 'orange', height: 250 }}>
-        <Controls state={state} doAction={doAction} />
+        <Controls state={state} doAction={doAction} user={user} />
       </div>
     </div>
   )
@@ -122,9 +127,9 @@ function GameSwitch({ state, startGame }) {
   return <BoardIndex state={state} startGame={startGame} />
 }
 
-export default function GameBoard({ state, doAction, startGame }) {
+export default function GameBoard({ state, doAction, startGame, user }) {
   return (
-    <GameContainer state={state} doAction={doAction}>
+    <GameContainer state={state} doAction={doAction} user={user}>
       <GameSwitch state={state} startGame={startGame} />
     </GameContainer>
   )

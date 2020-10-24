@@ -7,7 +7,7 @@ import Loading from '../components/Loading'
 
 export default function Game() {
   const { gameId } = useParams()
-  const [nickname, setNickname] = useState()
+  const [user, setUser] = useState()
   const [gameState, setGameState] = useState()
   const [logs, setLogs] = useState()
   const [isConnected, setIsConnected] = useState(false)
@@ -30,17 +30,19 @@ export default function Game() {
     socket.on('logs', (gameLogs) => {
       setLogs(gameLogs)
     })
+    socket.on('user', (currentUser) => {
+      setUser(currentUser)
+    })
   }, [socket])
 
   if (!isConnected) {
     return <Loading />
   }
 
-  if (!nickname) {
+  if (!user) {
     return (
       <JoinGame
         onSubmit={(nickname) => {
-          setNickname(nickname)
           socket.emit('joinGame', {
             gameId,
             nickname,
@@ -56,7 +58,7 @@ export default function Game() {
 
   return (
     <GhostGame
-      nickname={nickname}
+      user={user}
       state={gameState}
       startGame={() => socket.emit('startGame')}
       doAction={(action) => socket.emit('doAction', action)}

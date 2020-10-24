@@ -7,7 +7,12 @@ export default function JoinGame({ onSubmit }) {
     inputRef.current.focus()
   })
   return (
-    <form onSubmit={() => onSubmit(name)}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        onSubmit(name)
+      }}
+    >
       <input
         type="text"
         placeholder="Nickname"

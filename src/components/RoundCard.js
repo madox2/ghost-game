@@ -23,6 +23,7 @@ export default function RoundCard({ card }) {
         width: size,
         height: size,
         background: 'orange',
+        padding: 40,
       }}
     >
       {[0, 1, 2].map((row) => (

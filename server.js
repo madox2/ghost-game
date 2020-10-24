@@ -87,6 +87,7 @@ io.on('connection', (socket) => {
       users: [],
       isRunning: false,
     }
+    socket.emit('user', user)
     socket.join(gameId)
     setState((state) => ({
       ...state,

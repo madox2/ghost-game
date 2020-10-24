@@ -1,3 +1,8 @@
+import React from 'react'
+
+import ControlCard from '../../components/ControlCard'
+import RoundCard from '../../components/RoundCard'
+
 function Results({ state }) {
   if (state?.board?.type !== 'results') {
     return null
@@ -26,14 +31,28 @@ function BoardIndex({ startGame, state }) {
 }
 
 function Controls({ state, doAction }) {
-  const items = ['bottle', 'ghost', 'chair', 'book', 'mouse']
+  const items = [
+    ['bottle', 'green'],
+    ['ghost', 'white'],
+    ['chair', 'red'],
+    ['book', 'blue'],
+    ['mouse', 'grey'],
+  ]
   return (
-    <div style={{ background: 'purple' }}>
-      {items.map((item) => (
-        <span key={item} onClick={() => doAction(item)}>
-          {item}
-          {'   '}
-        </span>
+    <div
+      style={{
+        background: 'purple',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
+      {items.map(([type, color]) => (
+        <ControlCard
+          key={type}
+          type={type}
+          color={color}
+          onClick={() => doAction(type)}
+        />
       ))}
     </div>
   )
@@ -71,7 +90,7 @@ function Countdown({ state }) {
 }
 
 function Round({ state }) {
-  return JSON.stringify(state.board)
+  return <RoundCard card={state.board.card} />
 }
 
 function RoundResults({ state }) {

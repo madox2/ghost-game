@@ -70,15 +70,21 @@ function GameContainer({ children, state, doAction, user }) {
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
+        background: 'pink',
       }}
     >
+      {state.board?.roundCount && (
+        <div style={{ textAlign: 'center' }}>
+          Round {state.board.round} / {state.board.roundCount}
+        </div>
+      )}
       <div
         style={{
-          background: 'pink',
           flex: 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          flexDirection: 'column',
         }}
       >
         {children}
@@ -99,11 +105,10 @@ function Round({ state }) {
 }
 
 function RoundResults({ state }) {
-  const plusCards = 1 + state.board.fails.length
   return (
     <div>
       <div>
-        Winner: {state.board.winner.nickname} +{plusCards}
+        Winner: {state.board.winner.nickname} +{state.board.winnerBonus}
       </div>
       {!!state.board.fails.length && (
         <div>

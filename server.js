@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const app = express()
+const _ = require('lodash')
 app.use(express.static(path.join(__dirname, 'build')))
 
 app.get('/ping', function (req, res) {
@@ -14,24 +15,97 @@ app.get('/', function (req, res) {
 var http = require('http').createServer(app)
 var io = require('socket.io')(http)
 
-function shuffleCards() {
-  // TODO: shuffle cards
+function permutator(inputArr) {
+  var results = []
+
+  function permute(arr, memo) {
+    var cur,
+      memo = memo || [] // eslint-disable-line
+
+    for (var i = 0; i < arr.length; i++) {
+      cur = arr.splice(i, 1)
+      if (arr.length === 0) {
+        results.push(memo.concat(cur))
+      }
+      permute(arr.slice(), memo.concat(cur))
+      arr.splice(i, 0, cur[0])
+    }
+
+    return results
+  }
+
+  return permute(inputArr)
+}
+
+function hasCorrectItem({ bottle, ghost, chair, book, mouse }) {
+  if (bottle === 'green') {
+    return true
+  }
+  if (ghost === 'white') {
+    return true
+  }
+  if (chair === 'red') {
+    return true
+  }
+  if (book === 'blue') {
+    return true
+  }
+  if (mouse === 'grey') {
+    return true
+  }
+  return false
+}
+
+const sizes = [1, 2, 2.5]
+
+const positions = []
+for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < 3; j++) {
+    positions.push([i, j])
+  }
+}
+
+function makeCardsForItem(correctItem, correctColor) {
+  const allItems = ['bottle', 'ghost', 'chair', 'book', 'mouse']
+  const allColors = ['green', 'blue', 'white', 'grey', 'red']
+  const items = allItems.filter((i) => i !== correctItem)
+  const colors = allColors.filter((c) => c !== correctColor)
+  const permutations = permutator(colors)
+  const mapping = permutations.map((cardColors) =>
+    _.fromPairs(_.zip(items, cardColors))
+  )
+  const filtered = mapping.filter((m) => !hasCorrectItem(m))
+  const result = filtered.map((mapped) => [
+    [correctItem, correctColor],
+    ..._.toPairs(mapped),
+  ])
+  return result
+    .map((round) => {
+      const pos = _.shuffle(positions)
+
+      return round.map((item, i) => [
+        ...item,
+        sizes[_.random(0, sizes.length - 1)],
+        pos[i],
+      ])
+    })
+    .map((round) => _.shuffle(round))
+}
+
+function makeCards() {
   return [
-    [
-      ['bottle', 'green', 1, [0, 0]],
-      ['ghost', 'blue', 2, [0, 2]],
-      ['chair', 'white', 3, [1, 1]],
-      ['book', 'grey', 2, [2, 1]],
-      ['mouse', 'red', 1, [2, 2]],
-    ],
-    [
-      ['bottle', 'white', 3, [0, 1]],
-      ['ghost', 'blue', 3, [0, 2]],
-      ['chair', 'red', 1, [1, 2]],
-      ['book', 'grey', 2, [1, 1]],
-      ['mouse', 'green', 2, [3, 2]],
-    ],
+    ...makeCardsForItem('bottle', 'green'),
+    ...makeCardsForItem('ghost', 'white'),
+    ...makeCardsForItem('chair', 'red'),
+    ...makeCardsForItem('book', 'blue'),
+    ...makeCardsForItem('mouse', 'grey'),
   ]
+}
+
+const cards = makeCards()
+
+function shuffleCards() {
+  return _.shuffle(cards)
 }
 
 const gameRounds = {}
@@ -52,6 +126,7 @@ io.on('connection', (socket) => {
     return {
       type: 'round',
       round: number,
+      roundCount: gameRounds[gameId].length,
       card: gameRounds[gameId][number - 1],
       fails: [],
     }
@@ -64,6 +139,14 @@ io.on('connection', (socket) => {
   function setState(setState) {
     gameStates[gameId] = setState(gameStates[gameId])
     io.to(gameId).emit('gameState', getState())
+  }
+
+  function logSystem(msg) {
+    logs[gameId] = (logs[gameId] || []).concat({
+      timestamp: Date.now(),
+      message: `[System]: ${msg}`,
+    })
+    io.to(gameId).emit('logs', logs[gameId])
   }
 
   function log(msg) {
@@ -195,12 +278,14 @@ io.on('connection', (socket) => {
           }
         })
 
+      log('won that round')
       setState((state) => ({
         ...state,
         board: {
           ...state.board,
           type: 'roundResults',
           winner: user,
+          winnerBonus: gainedCards,
         },
         users: newUsers,
       }))
@@ -229,9 +314,13 @@ io.on('connection', (socket) => {
         user,
         type,
       })
+      log('made mistake')
       const allFailed = !state.users.some(
         (u) => !newFails.some((f) => f.user.id === u.id)
       )
+      if (allFailed) {
+        logSystem('all made mistake, try again')
+      }
       setState((state) => ({
         ...state,
         board: {

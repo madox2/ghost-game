@@ -97,7 +97,7 @@ function GameContainer({ children, state, doAction, user }) {
 }
 
 function Countdown({ state }) {
-  return state.board.value
+  return <span style={{ fontSize: 50 }}>{state.board.value}</span>
 }
 
 function Round({ state }) {
@@ -106,7 +106,7 @@ function Round({ state }) {
 
 function RoundResults({ state }) {
   return (
-    <div>
+    <div style={{ fontSize: 20 }}>
       <div>
         Winner: {state.board.winner.nickname} +{state.board.winnerBonus}
       </div>

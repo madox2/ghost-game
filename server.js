@@ -114,7 +114,7 @@ const gameStates = {}
 
 const logs = {}
 
-const START_COUNTDOWN = 0 // 3
+const START_COUNTDOWN = 3
 const ROUND_RESULTS_TIMEOUT = 2000
 
 io.on('connection', (socket) => {

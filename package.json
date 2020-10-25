@@ -27,7 +27,8 @@
     "server": "nodemon server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "serve:ngrok": "ngrok http -region eu 8080"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +50,7 @@
     ]
   },
   "devDependencies": {
+    "ngrok": "^3.3.0",
     "prettier": "^2.1.2"
   }
 }

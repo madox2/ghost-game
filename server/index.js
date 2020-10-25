@@ -1,5 +1,5 @@
 const express = require('express')
-const { initSockets } = require('./server/sockets')
+const { initSockets } = require('./sockets')
 
 const path = require('path')
 

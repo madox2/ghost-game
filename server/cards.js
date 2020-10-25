@@ -1,20 +1,32 @@
 const _ = require('lodash')
 const { permute } = require('./utils')
 
+const WHITE = 'white'
+const GREEN = 'green'
+const RED = 'red'
+const BLUE = 'blue'
+const GREY = 'grey'
+
+const BOTTLE = 'bottle'
+const GHOST = 'ghost'
+const CHAIR = 'chair'
+const BOOK = 'book'
+const MOUSE = 'mouse'
+
 function hasCorrectItem({ bottle, ghost, chair, book, mouse }) {
-  if (bottle === 'green') {
+  if (bottle === GREEN) {
     return true
   }
-  if (ghost === 'white') {
+  if (ghost === WHITE) {
     return true
   }
-  if (chair === 'red') {
+  if (chair === RED) {
     return true
   }
-  if (book === 'blue') {
+  if (book === BLUE) {
     return true
   }
-  if (mouse === 'grey') {
+  if (mouse === GREY) {
     return true
   }
   return false
@@ -30,8 +42,8 @@ for (let i = 0; i < 3; i++) {
 }
 
 function makeCardsForItem(correctItem, correctColor) {
-  const allItems = ['bottle', 'ghost', 'chair', 'book', 'mouse']
-  const allColors = ['green', 'blue', 'white', 'grey', 'red']
+  const allItems = [BOTTLE, GHOST, CHAIR, BOOK, MOUSE]
+  const allColors = [GREEN, BLUE, WHITE, GREY, RED]
   const items = allItems.filter((i) => i !== correctItem)
   const colors = allColors.filter((c) => c !== correctColor)
   const permutations = permute(colors)
@@ -58,11 +70,11 @@ function makeCardsForItem(correctItem, correctColor) {
 
 function makeCards() {
   return [
-    ...makeCardsForItem('bottle', 'green'),
-    ...makeCardsForItem('ghost', 'white'),
-    ...makeCardsForItem('chair', 'red'),
-    ...makeCardsForItem('book', 'blue'),
-    ...makeCardsForItem('mouse', 'grey'),
+    ...makeCardsForItem(BOTTLE, GREEN),
+    ...makeCardsForItem(GHOST, WHITE),
+    ...makeCardsForItem(CHAIR, RED),
+    ...makeCardsForItem(BOOK, BLUE),
+    ...makeCardsForItem(MOUSE, GREY),
   ]
 }
 

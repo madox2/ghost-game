@@ -1,0 +1,11 @@
+export const WHITE = 'white'
+export const GREEN = 'green'
+export const RED = 'red'
+export const BLUE = 'blue'
+export const GREY = 'grey'
+
+export const BOTTLE = 'bottle'
+export const GHOST = 'ghost'
+export const CHAIR = 'chair'
+export const BOOK = 'book'
+export const MOUSE = 'mouse'

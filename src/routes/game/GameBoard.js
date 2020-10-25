@@ -1,8 +1,20 @@
+import Parrot from 'react-partyparrot'
 import React from 'react'
 
+import {
+  BLUE,
+  BOOK,
+  BOTTLE,
+  CHAIR,
+  GHOST,
+  GREEN,
+  GREY,
+  MOUSE,
+  RED,
+  WHITE,
+} from '../../app/constants'
 import ControlCard from '../../components/ControlCard'
 import RoundCard from '../../components/RoundCard'
-import Parrot from 'react-partyparrot'
 
 function Results({ state }) {
   if (state?.board?.type !== 'results') {
@@ -36,11 +48,11 @@ function BoardIndex({ startGame, state }) {
 
 function Controls({ state, doAction, user }) {
   const items = [
-    ['bottle', 'green'],
-    ['ghost', 'white'],
-    ['chair', 'red'],
-    ['book', 'blue'],
-    ['mouse', 'grey'],
+    [BOTTLE, GREEN],
+    [GHOST, WHITE],
+    [CHAIR, RED],
+    [BOOK, BLUE],
+    [MOUSE, GREY],
   ]
   return (
     <div

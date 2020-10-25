@@ -6,13 +6,16 @@ import {
   faBook,
   faMouse,
 } from '@fortawesome/free-solid-svg-icons'
+import React from 'react'
+
+import { BLUE, GREEN, GREY, RED, WHITE } from '../app/constants'
 
 const colors = {
-  blue: 'rgb(37, 84, 196)',
-  red: '#e9290f',
-  grey: 'rgb(106, 106, 106)',
-  green: 'rgb(64, 136, 31)',
-  white: '#f8f9fc',
+  [BLUE]: 'rgb(37, 84, 196)',
+  [RED]: '#e9290f',
+  [GREY]: 'rgb(106, 106, 106)',
+  [GREEN]: 'rgb(64, 136, 31)',
+  [WHITE]: '#f8f9fc',
 }
 
 const mapping = {

@@ -4,11 +4,10 @@ const { generateId } = require('./utils')
 const START_COUNTDOWN = 3
 const ROUND_RESULTS_TIMEOUT = 2000
 
-const gameRounds = {}
-
+// app state
+const gameCards = {}
 const gameStates = {}
-
-const logs = {}
+const gameLogs = {}
 
 function initSockets(io) {
   io.on('connection', (socket) => {
@@ -20,8 +19,8 @@ function initSockets(io) {
       return {
         type: 'round',
         round: number,
-        roundCount: gameRounds[gameId].length,
-        card: gameRounds[gameId][number - 1],
+        roundCount: gameCards[gameId].length,
+        card: gameCards[gameId][number - 1],
         fails: [],
       }
     }
@@ -36,23 +35,23 @@ function initSockets(io) {
     }
 
     function logSystem(msg) {
-      logs[gameId] = (logs[gameId] || []).concat({
+      gameLogs[gameId] = (gameLogs[gameId] || []).concat({
         system: true,
         id: generateId(),
         timestamp: Date.now(),
         message: msg,
       })
-      io.to(gameId).emit('logs', logs[gameId])
+      io.to(gameId).emit('logs', gameLogs[gameId])
     }
 
     function log(msg) {
-      logs[gameId] = (logs[gameId] || []).concat({
+      gameLogs[gameId] = (gameLogs[gameId] || []).concat({
         id: generateId(),
         timestamp: Date.now(),
         message: msg,
         nickname: user.nickname,
       })
-      io.to(gameId).emit('logs', logs[gameId])
+      io.to(gameId).emit('logs', gameLogs[gameId])
     }
 
     function handleError(e) {
@@ -88,6 +87,7 @@ function initSockets(io) {
     socket.on('disconnect', () => {
       try {
         if (getState()) {
+          console.log('disconnect', user)
           setState((state) => ({
             ...state,
             users: state.users.filter((u) => u.id !== user.id),
@@ -135,7 +135,8 @@ function initSockets(io) {
               },
             }))
           } else {
-            gameRounds[gameId] = shuffleCards()
+            // start game
+            gameCards[gameId] = shuffleCards()
             setState((state) => ({
               ...state,
               board: newRound(1),
@@ -152,9 +153,11 @@ function initSockets(io) {
       try {
         const state = getState()
         if (state?.board?.type !== 'round') {
+          // out of round
           return
         }
         if (state.board.fails.some((f) => f.user.id === user.id)) {
+          // already answered
           return
         }
         // eslint-disable-next-line
@@ -163,8 +166,8 @@ function initSockets(io) {
           let gainedCards = 1
           const newUsers = state.users
             .map((u) => {
+              // map non winners
               if (u.id === user.id) {
-                // winner
                 return u
               }
               const failedCount = state.board.fails.filter(
@@ -178,6 +181,7 @@ function initSockets(io) {
               }
             })
             .map((u) => {
+              // map winner
               if (u.id !== user.id) {
                 return u
               }
@@ -201,8 +205,7 @@ function initSockets(io) {
 
           setTimeout(() => {
             const nextRound = state.board.round + 1
-            console.log(nextRound, gameRounds[gameId])
-            if (nextRound > gameRounds[gameId].length) {
+            if (nextRound > gameCards[gameId].length) {
               setState((state) => ({
                 ...state,
                 isRunning: false,

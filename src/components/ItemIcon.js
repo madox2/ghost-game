@@ -8,10 +8,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 const colors = {
-  blue: '#00658c',
+  blue: 'rgb(37, 84, 196)',
   red: '#e9290f',
-  grey: '#7d7d7a',
-  green: '#2b580c',
+  grey: 'rgb(106, 106, 106)',
+  green: 'rgb(64, 136, 31)',
   white: '#f8f9fc',
 }
 

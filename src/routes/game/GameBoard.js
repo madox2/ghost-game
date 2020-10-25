@@ -9,7 +9,7 @@ function Results({ state }) {
     return null
   }
   const results = state.board.results.slice()
-  results.sort((a, b) => a - b)
+  results.sort((a, b) => b.cards - a.cards)
   return (
     <div style={{ marginBottom: 20, textAlign: 'left' }}>
       <div style={{ marginBottom: 20 }}>

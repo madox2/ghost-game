@@ -2,6 +2,7 @@ import React from 'react'
 
 import ControlCard from '../../components/ControlCard'
 import RoundCard from '../../components/RoundCard'
+import Parrot from 'react-partyparrot'
 
 function Results({ state }) {
   if (state?.board?.type !== 'results') {
@@ -10,7 +11,10 @@ function Results({ state }) {
   const results = state.board.results.slice()
   results.sort((a, b) => a - b)
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: 20, textAlign: 'left' }}>
+      <div style={{ marginBottom: 20 }}>
+        <Parrot name="dealwithit" hd />
+      </div>
       {results.map((r, i) => (
         <div key={r.id}>
           {i + 1}. {r.nickname} ({r.cards})
@@ -41,7 +45,6 @@ function Controls({ state, doAction, user }) {
   return (
     <div
       style={{
-        background: 'purple',
         display: 'flex',
         justifyContent: 'center',
       }}
@@ -70,13 +73,12 @@ function GameContainer({ children, state, doAction, user }) {
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        background: 'pink',
       }}
     >
       {state.board?.roundCount && (
-        <div style={{ textAlign: 'center' }}>
+        <p style={{ textAlign: 'center', marginTop: 10 }}>
           Round {state.board.round} / {state.board.roundCount}
-        </div>
+        </p>
       )}
       <div
         style={{
@@ -89,7 +91,7 @@ function GameContainer({ children, state, doAction, user }) {
       >
         {children}
       </div>
-      <div style={{ background: 'orange', height: 250 }}>
+      <div style={{ height: 250 }}>
         <Controls state={state} doAction={doAction} user={user} />
       </div>
     </div>
@@ -97,7 +99,11 @@ function GameContainer({ children, state, doAction, user }) {
 }
 
 function Countdown({ state }) {
-  return <span style={{ fontSize: 50 }}>{state.board.value}</span>
+  return (
+    <p>
+      <span style={{ fontSize: 100 }}>{state.board.value}</span>
+    </p>
+  )
 }
 
 function Round({ state }) {
@@ -107,13 +113,22 @@ function Round({ state }) {
 function RoundResults({ state }) {
   return (
     <div style={{ fontSize: 20 }}>
-      <div>
-        Winner: {state.board.winner.nickname} +{state.board.winnerBonus}
-      </div>
+      <p>
+        Bonus:{' '}
+        <b>
+          {state.board.winner.nickname} +{state.board.winnerBonus}
+        </b>
+      </p>
       {!!state.board.fails.length && (
-        <div>
-          Failed: {state.board.fails.map((f) => f.user.nickname).join(', ')}
-        </div>
+        <p>
+          Mistakes:{' '}
+          {state.board.fails.map((f) => (
+            <>
+              <br />
+              <span>- {f.user.nickname}</span>
+            </>
+          ))}
+        </p>
       )}
     </div>
   )

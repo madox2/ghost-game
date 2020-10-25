@@ -1,8 +1,13 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import React from 'react'
+import 'tawian-frontend'
+import 'typeface-cousine'
+import { setPublicParrotPath } from 'react-partyparrot'
 
 import Game from './routes/Game'
 import Home from './routes/Home'
+
+setPublicParrotPath('/other')
 
 function App() {
   return (

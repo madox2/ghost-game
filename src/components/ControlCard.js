@@ -11,7 +11,7 @@ function DisabledBackdrop() {
         left: 0,
         bottom: 0,
         right: 0,
-        background: 'rgba(0, 0, 0, .4)',
+        background: 'rgba(255, 255, 255, .4)',
       }}
     />
   )
@@ -24,7 +24,7 @@ export default function ControlCard({ type, color, onClick, disabled }) {
         width: 120,
         height: 200,
         margin: 20,
-        background: 'orange',
+        background: '#ff9800',
         cursor: disabled ? undefined : 'pointer',
         display: 'flex',
         alignItems: 'center',

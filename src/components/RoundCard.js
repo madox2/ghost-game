@@ -22,7 +22,7 @@ export default function RoundCard({ card }) {
         flexDirection: 'row',
         width: size,
         height: size,
-        background: 'orange',
+        background: '#ff9800',
         padding: 40,
       }}
     >

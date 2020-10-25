@@ -23,7 +23,9 @@ export default function JoinGame({ onSubmit }) {
           onChange={(e) => setName(e.target.value)}
           ref={inputRef}
         />
-        <button type="submit">Join game</button>
+        <button type="submit" disabled={!name} style={{ marginLeft: 10 }}>
+          Join game
+        </button>
       </form>
     </SimpleTemplate>
   )

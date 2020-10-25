@@ -3,23 +3,49 @@ import React from 'react'
 import GameBoard from './GameBoard'
 
 function Users({ state }) {
+  const sorted = state.users?.slice()
+  sorted.sort((a, b) => b.cards - a.cards)
   return (
-    <div style={{ width: 200, background: 'blue' }}>
-      {state.users.map((u) => (
-        <div key={u.id}>
-          {u.nickname} ({u.cards})
-        </div>
-      ))}
+    <div
+      className="card card-warning"
+      style={{ width: 250, display: 'flex', flexDirection: 'column' }}
+    >
+      <header className="card-header">Users</header>
+      <div className="list-group" style={{ overflowY: 'auto' }}>
+        {sorted?.map((h) => (
+          <span
+            key={h.id}
+            style={{ display: 'flex', justifyContent: 'space-between' }}
+          >
+            <span>{h.nickname}</span>
+            <span>({h.cards})</span>
+          </span>
+        ))}
+      </div>
     </div>
   )
 }
 
 function Logs({ logs }) {
   return (
-    <div style={{ width: 200, background: 'red' }}>
-      {logs?.map((h) => (
-        <div key={h.timestamp}>{h.message}</div>
-      ))}
+    <div
+      className="card card-warning"
+      style={{ width: 250, display: 'flex', flexDirection: 'column' }}
+    >
+      <header className="card-header">Logs</header>
+      <div className="list-group" style={{ overflowY: 'auto' }}>
+        {logs
+          ?.slice()
+          .reverse()
+          .map((h) => (
+            <span
+              key={h.id}
+              style={{ fontWeight: h.system ? 'bold' : 'normal' }}
+            >
+              [{h.system ? 'System' : h.nickname}] {h.message}
+            </span>
+          ))}
+      </div>
     </div>
   )
 }

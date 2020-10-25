@@ -23,11 +23,11 @@ const mapping = {
   mouse: faMouse,
 }
 
-export default function ItemIcon({ type, color, size }) {
+export default function ItemIcon({ type, color, size, style }) {
   return (
     <FontAwesomeIcon
       icon={mapping[type]}
-      style={{ color: colors[color], fontSize: size }}
+      style={{ color: colors[color], fontSize: size, ...style }}
     />
   )
 }

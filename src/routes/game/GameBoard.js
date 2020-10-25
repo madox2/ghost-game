@@ -112,25 +112,28 @@ function Round({ state }) {
 
 function RoundResults({ state }) {
   return (
-    <div style={{ fontSize: 20 }}>
-      <p>
-        Bonus:{' '}
-        <b>
-          {state.board.winner.nickname} +{state.board.winnerBonus}
-        </b>
-      </p>
-      {!!state.board.fails.length && (
+    <>
+      <div style={{ fontSize: 20 }}>
         <p>
-          Mistakes:{' '}
-          {state.board.fails.map((f) => (
-            <>
-              <br />
-              <span>- {f.user.nickname}</span>
-            </>
-          ))}
+          Points:{' '}
+          <b>
+            {state.board.winner.nickname} +{state.board.winnerBonus}
+          </b>
         </p>
-      )}
-    </div>
+        {!!state.board.fails.length && (
+          <p>
+            Mistakes:{' '}
+            {state.board.fails.map((f) => (
+              <>
+                <br />
+                <span>- {f.user.nickname}</span>
+              </>
+            ))}
+          </p>
+        )}
+      </div>
+      <RoundCard card={state.board.card} scale={0.5} />
+    </>
   )
 }
 

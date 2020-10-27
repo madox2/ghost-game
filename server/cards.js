@@ -1,5 +1,6 @@
+const { combine } = require('./utils')
+
 const _ = require('lodash')
-const { permute } = require('./utils')
 
 const WHITE = 'white'
 const GREEN = 'green'
@@ -13,75 +14,72 @@ const CHAIR = 'chair'
 const BOOK = 'book'
 const MOUSE = 'mouse'
 
-function hasCorrectItem({ bottle, ghost, chair, book, mouse }) {
-  if (bottle === GREEN) {
-    return true
-  }
-  if (ghost === WHITE) {
-    return true
-  }
-  if (chair === RED) {
-    return true
-  }
-  if (book === BLUE) {
-    return true
-  }
-  if (mouse === GREY) {
-    return true
-  }
-  return false
+const type2color = {
+  [BOTTLE]: GREEN,
+  [GHOST]: WHITE,
+  [CHAIR]: RED,
+  [BOOK]: BLUE,
+  [MOUSE]: GREY,
 }
 
-const sizes = [1, 2, 2.5]
-
-const positions = []
-for (let i = 0; i < 3; i++) {
-  for (let j = 0; j < 3; j++) {
-    positions.push([i, j])
-  }
+function randomPosition() {
+  return [_.random(0, 10), _.random(0, 10)]
 }
 
-function makeCardsForItem(correctItem, correctColor) {
-  const allItems = [BOTTLE, GHOST, CHAIR, BOOK, MOUSE]
-  const allColors = [GREEN, BLUE, WHITE, GREY, RED]
-  const items = allItems.filter((i) => i !== correctItem)
+function getTypeColor(type) {
+  return type2color[type]
+}
+
+const allTypes = [BOTTLE, GHOST, CHAIR, BOOK, MOUSE]
+const allColors = [GREEN, BLUE, WHITE, GREY, RED]
+
+function makeCardsForType(correctType, correctColor) {
+  const types = allTypes.filter((i) => i !== correctType)
   const colors = allColors.filter((c) => c !== correctColor)
-  const permutations = permute(colors)
-  const mapping = permutations.map((cardColors) =>
-    _.fromPairs(_.zip(items, cardColors))
-  )
-  const filtered = mapping.filter((m) => !hasCorrectItem(m))
-  const result = filtered.map((mapped) => [
-    [correctItem, correctColor],
-    ..._.toPairs(mapped),
-  ])
-  return result
-    .map((round) => {
-      const pos = _.shuffle(positions)
+  const typeCombinations = combine(types, 2)
+  const wrongCards = _.flatMap(typeCombinations, ([type1, type2]) => {
+    const color1 = getTypeColor(type1)
+    const color2 = getTypeColor(type2)
+    const typeColors = colors.filter((c) => c !== color1 && c !== color2)
+    return [
+      _.zip([type1, type2], typeColors),
+      _.zip([type2, type1], typeColors),
+    ]
+  })
 
-      return round.map((item, i) => [
-        ...item,
-        sizes[_.random(0, sizes.length - 1)],
-        pos[i],
-      ])
-    })
-    .map((round) => _.shuffle(round))
+  const [wrongType] = _.shuffle(types)
+  const wrongColor = _.shuffle(colors).find(
+    (c) => c !== getTypeColor(wrongType)
+  )
+  const oneCorrectCard = [
+    [correctType, correctColor],
+    [wrongType, wrongColor],
+  ]
+  return [...wrongCards, oneCorrectCard]
 }
 
 function makeCards() {
-  return [
-    ...makeCardsForItem(BOTTLE, GREEN),
-    ...makeCardsForItem(GHOST, WHITE),
-    ...makeCardsForItem(CHAIR, RED),
-    ...makeCardsForItem(BOOK, BLUE),
-    ...makeCardsForItem(MOUSE, GREY),
-  ]
+  const cards = [
+    ...makeCardsForType(BOTTLE, GREEN),
+    ...makeCardsForType(GHOST, WHITE),
+    ...makeCardsForType(CHAIR, RED),
+    ...makeCardsForType(BOOK, BLUE),
+    ...makeCardsForType(MOUSE, GREY),
+  ].map((card) => [...card, randomPosition()])
+  return cards
 }
-
-const cards = makeCards()
 
 function shuffleCards() {
-  return _.shuffle(cards)
+  return _.shuffle(makeCards())
 }
 
-module.exports = { shuffleCards, hasCorrectItem }
+function isCorrectAnswer(card, type) {
+  const [item1, item2] = card
+  const color = getTypeColor(type)
+  return (
+    [item1, item2].every(([t, c]) => t !== type && c !== color) ||
+    [item1, item2].some(([t, c]) => t === type && c === color)
+  )
+}
+
+module.exports = { shuffleCards, isCorrectAnswer }

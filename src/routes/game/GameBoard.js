@@ -144,7 +144,7 @@ function RoundResults({ state }) {
           </p>
         )}
       </div>
-      <RoundCard card={state.board.card} scale={0.5} />
+      <RoundCard card={state.board.card} />
     </>
   )
 }

@@ -1,4 +1,4 @@
-const { shuffleCards, hasCorrectItem } = require('./cards')
+const { shuffleCards, isCorrectAnswer } = require('./cards')
 const { generateId } = require('./utils')
 
 const START_COUNTDOWN = 3
@@ -160,9 +160,7 @@ function initSockets(io) {
           // already answered
           return
         }
-        // eslint-disable-next-line
-        const [_, color] = state.board.card.find(([t]) => t === type)
-        if (hasCorrectItem({ [type]: color })) {
+        if (isCorrectAnswer(state.board.card, type)) {
           let gainedCards = 1
           const newUsers = state.users
             .map((u) => {

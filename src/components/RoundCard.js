@@ -1,3 +1,6 @@
+import React from 'react'
+
+import { DisabledBackdrop } from './DisabledBackdrop'
 import ItemIcon from './ItemIcon'
 
 const cols = [0, 1, 2, 3]
@@ -26,7 +29,7 @@ function renderCell(row, col, card) {
   )
 }
 
-export default function RoundCard({ card }) {
+export default function RoundCard({ card, disabled }) {
   return (
     <div
       style={{
@@ -37,25 +40,29 @@ export default function RoundCard({ card }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        position: 'relative',
       }}
     >
+      {disabled && <DisabledBackdrop />}
       <table>
-        {rows.map((row) => (
-          <tr key={row}>
-            {cols.map((col) => (
-              <td key={col} style={{ padding: 0, border: 'none' }}>
-                <div
-                  style={{
-                    minWidth: cellSize,
-                    minHeight: cellSize,
-                  }}
-                >
-                  {renderCell(row, col, card)}
-                </div>
-              </td>
-            ))}
-          </tr>
-        ))}
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row}>
+              {cols.map((col) => (
+                <td key={col} style={{ padding: 0, border: 'none' }}>
+                  <div
+                    style={{
+                      minWidth: cellSize,
+                      minHeight: cellSize,
+                    }}
+                  >
+                    {renderCell(row, col, card)}
+                  </div>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
   )

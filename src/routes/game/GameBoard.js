@@ -1,5 +1,5 @@
 import Parrot from 'react-partyparrot'
-import React from 'react'
+import { Fragment } from 'react'
 
 import {
   BLUE,
@@ -144,17 +144,20 @@ function Round({ state }) {
               <p>
                 Mistakes:{' '}
                 {state.board.fails.map((f) => (
-                  <>
+                  <Fragment key={f.user.id}>
                     <br />
                     <span>- {f.user.nickname}</span>
-                  </>
+                  </Fragment>
                 ))}
               </p>
             )}
           </>
         )}
       </div>
-      <RoundCard card={state.board.card} />
+      <RoundCard
+        card={state.board.card}
+        disabled={state?.board?.type === 'roundResults'}
+      />
     </>
   )
 }

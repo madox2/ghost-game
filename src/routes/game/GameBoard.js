@@ -119,29 +119,39 @@ function Countdown({ state }) {
 }
 
 function Round({ state }) {
-  return <RoundCard card={state.board.card} />
-}
-
-function RoundResults({ state }) {
   return (
     <>
-      <div style={{ fontSize: 20 }}>
-        <p>
-          Points:{' '}
-          <b>
-            {state.board.winner.nickname} +{state.board.winnerBonus}
-          </b>
-        </p>
-        {!!state.board.fails.length && (
-          <p>
-            Mistakes:{' '}
-            {state.board.fails.map((f) => (
-              <>
-                <br />
-                <span>- {f.user.nickname}</span>
-              </>
-            ))}
-          </p>
+      <div
+        style={{
+          fontSize: 20,
+          minHeight: 170,
+          marginBottom: 10,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        {state?.board?.type === 'roundResults' && (
+          <>
+            <p>
+              Points:{' '}
+              <b>
+                {state.board.winner.nickname} +{state.board.winnerBonus}
+              </b>
+            </p>
+            {!!state.board.fails.length && (
+              <p>
+                Mistakes:{' '}
+                {state.board.fails.map((f) => (
+                  <>
+                    <br />
+                    <span>- {f.user.nickname}</span>
+                  </>
+                ))}
+              </p>
+            )}
+          </>
         )}
       </div>
       <RoundCard card={state.board.card} />
@@ -153,11 +163,8 @@ function GameSwitch({ state, startGame }) {
   if (state?.board?.type === 'countdown') {
     return <Countdown state={state} />
   }
-  if (state?.board?.type === 'round') {
+  if (state?.board?.type === 'round' || state?.board?.type === 'roundResults') {
     return <Round state={state} />
-  }
-  if (state?.board?.type === 'roundResults') {
-    return <RoundResults state={state} />
   }
   return <BoardIndex state={state} startGame={startGame} />
 }

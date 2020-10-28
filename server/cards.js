@@ -22,8 +22,18 @@ const type2color = {
   [MOUSE]: GREY,
 }
 
-function randomPosition() {
-  return [_.random(0, 10), _.random(0, 10)]
+function randomSizes() {
+  return _.chain([1, 2, 3.5]).shuffle().take(2).value()
+}
+
+const COLS = 4
+
+const allPositions = _.flatMap(
+  _.range(COLS).map((row) => _.range(COLS).map((col) => [row, col]))
+)
+
+function randomPositions() {
+  return _.chain(allPositions).shuffle().take(2).value()
 }
 
 function getTypeColor(type) {
@@ -65,7 +75,15 @@ function makeCards() {
     ...makeCardsForType(CHAIR, RED),
     ...makeCardsForType(BOOK, BLUE),
     ...makeCardsForType(MOUSE, GREY),
-  ].map((card) => [...card, randomPosition()])
+  ].map((card) => {
+    const [first, second] = card
+    const [size1, size2] = randomSizes()
+    const [position1, position2] = randomPositions()
+    return [
+      [...first, size1, position1],
+      [...second, size2, position2],
+    ]
+  })
   return cards
 }
 
